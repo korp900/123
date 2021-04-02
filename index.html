@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="ru" xmlns="http://www.w3.org/1999/html">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+            <link rel="shortcut icon" type="image/x-icon" href="https://cdn.icrypto.media/images/455100ed_3aff_4e2a_b843_d91c932062ea.jpeg" />
+        <!-- Bootstrap CSS -->
+            <link rel="stylesheet" href="css/bootstrap.css">
+            <link rel="stylesheet" href="css/bootstrap-reboot.css">
+            <link rel="stylesheet" href="css/bootstrap-grid.css">
+            <link rel="stylesheet" href="css/bootstrap-grid.min.css">
+            <link rel="stylesheet" href="css/bootstrap.min.css">
+            <link rel="stylesheet" href="css/bootstrap.css.map">
+            <link rel="stylesheet" href="css/bootstrap-reboot.css.map">
+            <link rel="stylesheet" href="css/bootstrap-grid.css.map">
+            <link rel="stylesheet" href="css/bootstrap-grid.min.css.map">
+            <link rel="stylesheet" href="css/bootstrap.min.css.map">
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+            <script src="https://kit.fontawesome.com/05a1b08970.js" crossorigin="anonymous"></script>
+
+        <title>korobkov workgroup 201 </title>
+
+       
+    </head>
+      
+    <body>
+    <!-- Навигационная панель -->
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+          <div class="container-fluid">
+            <a class="navbar-brand" href="index.php">Workgroup 201 Korobkov</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                  <a class="nav-link active" aria-current="page" href="index.php">Главная</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="contact-us.php">Контакты</a>
+                </li>
+              </ul>
+              <form class="d-flex">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+              </form>
+            </div>
+          </div>
+        </nav>
+     
+        <ul class="nav">
+          <li class="nav-item">
+            <a class="nav-link" onclick="viewPostList(); return false;" href="/">Главная</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/addPost" onclick="viewAddPostPage(); return false;">Добавить запись</a>
+          </li>
+        </ul>
+        <div class="container my-5" id="root">
+    
+        </div>
+    <script>
+      
+    
+    
+    
+    
+      function viewPostList(){
+        root.innerHTML = '';
+        fetch('php/getPosts.php')
+        .then(response=>response.json())
+        .then(result=>{
+          let table = document.createElement('table');
+          table.classList.add('table');
+          let thead = document.createElement('thead');
+          let tr = document.createElement('tr');
+          tr.innerHTML = `
+            <th scope="col">#</th>
+            <th scope="col">Заголовок</th>
+            <th scope="col">Автор</th>
+            <th scope="col">Дата добавления</th>
+          `;
+          let tbody = document.createElement('tbody');
+          thead.append(tr);
+          table.append(thead);
+          for(let i=0; i<result.length; i++){
+            let tr = document.createElement('tr');
+            tr.innerHTML = `
+              <th scope="row">${i+1}</th>
+              <td><a href="#" onclick="viewPost('${result[i].id}');return false;">${result[i].title}</a></td>
+              <td>${result[i].author}</td>
+              <td>${result[i].date_added}</td>
+            `;
+            tbody.append(tr);
+          }
+          table.append(tbody);
+          root.append(table);
+          console.log(result);
+        });
+      }
+
+      function viewAddPostPage(){
+        root.innerHTML = '';
+        let parent = document.createElement('div');
+        parent.classList.add('mx-auto','col-sm-5');
+        let form = document.createElement('form');
+        let div = document.createElement('div');
+        div.classList.add('mb-3');
+        let input = document.createElement('input');
+        input.classList.add('form-control');
+        input.placeholder="Название статьи";
+        input.name = "title";
+        div.append(input);
+        form.append(div);
+        div = document.createElement('div');
+        div.classList.add('mb-3');
+        textarea = document.createElement('textarea');
+        textarea.classList.add('form-control');
+        textarea.placeholder = "Текст статьи";
+        textarea.name = "text";
+        div.append(textarea);
+        form.append(div);
+        div = document.createElement('div');
+        div.classList.add('mb-3');
+        input = document.createElement('input');
+        input.classList.add('form-control');
+        input.placeholder = "Автор";
+        input.name = "author";
+        div.append(input);
+        form.append(div);
+        div = document.createElement('div');
+        div.classList.add('mb-3');
+        input = document.createElement('input');
+        input.classList.add('form-control','btn','btn-primary');
+        input.type = "submit";
+        input.value = "Добавить запись";
+        div.append(input);
+        form.append(div);
+        form.onsubmit = (event)=>{
+          event.preventDefault();
+          const form = event.target;
+          const formData = new FormData(form);
+          fetch('php/addPost.php',{
+            method: 'POST',
+            body: formData
+          }).then(response=>response.json())
+            .then(result=>{
+              if (result.result == "success"){
+                location.href = 'http://korp9000.beget.tech/';
+              }
+            })
+        }
+        
+        
+        parent.append(form);
+        root.append(parent);
+      }
+      
+      function viewPost(id){
+        root.innerHTML = '';
+        root.innerHTML = ''+id;
+       
+      }
+      
+     
+      viewPostList();
+    </script>
+     <!-- footer -->
+        <footer class="container-fluid bg-dark bg-gradiebt text-white py-3">
+            <p class="text-center">&copy; 2021 Korobkov  workgroup 201</p>
+        </footer>
+        <!-- footer end -->
+        
+    <!-- Вариант 1: Bootstrap в связке с Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+    <script>
+      /*response=>response.json()
+      (response)=>{
+        return response.json()
+      }
+      function(response){
+        return response.json();
+      }*/
+    </script>
+  </body>
+</html>
